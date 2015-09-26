@@ -9,6 +9,8 @@ var revPath = require('rev-path');
 var sortKeys = require('sort-keys');
 var modifyFilename = require('modify-filename');
 
+var revData = {};
+
 function relPath(base, filePath) {
 	if (filePath.indexOf(base) !== 0) {
 		return filePath.replace(/\\/g, '/');
@@ -81,6 +83,7 @@ var plugin = function () {
 
 		var oldPath = file.path;
 		transformFilename(file);
+		revData[relPath(file.revOrigBase, file.revOrigPath)] = relPath(file.base, file.path);
 		pathMap[oldPath] = file.revHash;
 
 		cb(null, file);
@@ -172,5 +175,7 @@ plugin.manifest = function (pth, opts) {
 		}.bind(this));
 	});
 };
+
+plugin.data = revData;
 
 module.exports = plugin;
